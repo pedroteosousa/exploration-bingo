@@ -6,7 +6,6 @@ import BingoCard from "../../islands/BingoCard.tsx";
 export const handler: Handlers<Room, { client: DatabaseClient }> = {
   async GET(_req, ctx: WithDatabaseContext) {
     const id = ctx.params.id;
-    console.log("rendering room", id);
     const room = await ctx.state.client.room(id);
     return ctx.render(room);
   },

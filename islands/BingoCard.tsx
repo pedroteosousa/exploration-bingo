@@ -7,6 +7,12 @@ function getPosition(size: number, i: number, j: number) {
   return i * size + j;
 }
 
+function getType(room: Room, pos: number) {
+  if (room.startCells.includes(pos)) return Type.Start;
+  if (room.finishCells.includes(pos)) return Type.End;
+  return Type.Normal;
+}
+
 interface BingoCardProps {
   room: Room,
 }
@@ -16,17 +22,11 @@ export default function BingoCard(props: BingoCardProps) {
   const cells = generateBoard(size.value, props.room.seed);
   const cellsType = Array<Signal<string>>(size.value * size.value);
   const cellsState = Array<Signal<string>>(size.value * size.value);
-  for (let i = 0; i < size.value * size.value; i++) {
-    cellsType[i] = useSignal(Type.Normal);
-    cellsState[i] = useSignal(State.Hidden);
-  }
-  const corners = [[0, 0], [size.value - 1, 0], [0, size.value - 1], [size.value - 1, size.value - 1]];
-  for (let i = 0; i < corners.length; i++) {
-    cellsType[getPosition(size.value, corners[i][0], corners[i][1])] = useSignal(Type.End);
-  }
-  cellsType[getPosition(size.value, Math.floor(size.value / 2), Math.floor(size.value / 2))] = useSignal(Type.Start);
-  cellsState[getPosition(size.value, Math.floor(size.value / 2), Math.floor(size.value / 2))] = useSignal(State.Revealed);
 
+  for (let i = 0; i < size.value * size.value; i++) {
+    cellsType[i] = useSignal(getType(props.room, i));
+    cellsState[i] = useSignal(props.room.startCells.includes(i) ? State.Revealed : State.Hidden);
+  }
 
   useSignalEffect(() => {
     for (let i = 0; i < size.value; i++) {

@@ -5,7 +5,7 @@ interface RoomButtonProps {
 
 export default function RoomList(props: RoomButtonProps) {
   return (
-    <div onClick={() => window.location.href = `/room/${props.id}`}>
+    <div className="overflow-hidden text-ellipsis" onClick={() => window.location.href = `/room/${props.id}`}>
       {props.name}
     </div>
   );
