@@ -37,12 +37,18 @@ function getTypeText(type: string) {
   return "";
 }
 
-function handleClick(setup: boolean, type: Signal<string>, state: Signal<string>) {
+function handleClick(setup: boolean, type: Signal<string>, state: Signal<string>, roomId: string, position: number) {
   if (setup) {
     type.value = nextType(type.value);
   } else {
-    if (state.value !== State.Hidden)
-    state.value = State.Marked;
+    if (state.value !== State.Hidden && state.value !== State.Marked) {
+      const body = JSON.stringify({ position });
+      fetch(`/api/room/${roomId}/select`, { method: "POST", body }).then(res => {
+        if (res.status === 200) {
+          state.value = State.Marked;
+        }
+      })
+    }
   }
 }
 
@@ -51,6 +57,8 @@ interface BingoCellProps {
   state: Signal<string>;
   info: Cell;
   setup: boolean;
+  roomId: string;
+  position: number;
 }
 
 export default function BingoCell({
@@ -58,9 +66,11 @@ export default function BingoCell({
   state,
   info,
   setup,
+  roomId,
+  position,
 }: BingoCellProps) {
   return (
-    <td onClick={() => handleClick(setup, type, state)} className={`${getColorClass(type.value, state.value)} text-xs leading-3 text-center min-w-24 w-24 h-24 border border-2 border-solid overflow-hidden text-ellipsis`}>
+    <td onClick={() => handleClick(setup, type, state, roomId, position)} className={`${getColorClass(type.value, state.value)} text-xs leading-3 text-center min-w-24 w-24 h-24 border border-2 border-solid overflow-hidden text-ellipsis`}>
       {setup ? getTypeText(type.value) : (state.value === State.Hidden ? "" : info.text)}
     </td>
   );

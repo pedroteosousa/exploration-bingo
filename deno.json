@@ -31,7 +31,8 @@
     "tailwindcss/plugin": "npm:/tailwindcss@3.3.5/plugin.js",
     "$std/": "https://deno.land/std@0.211.0/",
     "mongodb": "https://deno.land/x/mongo@v0.32.0/mod.ts",
-    "vegas": "https://deno.land/x/vegas@v1.3.0/mod.ts"
+    "vegas": "https://deno.land/x/vegas@v1.3.0/mod.ts",
+    "std/": "https://deno.land/std@0.213.0/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

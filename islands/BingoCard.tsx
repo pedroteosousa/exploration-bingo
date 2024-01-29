@@ -13,13 +13,20 @@ function getType(room: Room, pos: number) {
   return Type.Normal;
 }
 
+function getState(room: Room, pos: number) {
+  const cell = room.cells[pos];
+  if (cell.colors.length !== 0) return State.Marked;
+  if (room.startCells.includes(pos)) return State.Revealed;
+  return State.Hidden;
+}
+
 interface BingoCardProps {
   room: Room,
 }
 
 export default function BingoCard(props: BingoCardProps) {
   const size = useSignal(props.room.size);
-  const cells = generateBoard(size.value, props.room.seed);
+  const cells = props.room.cells;
   const cellsType = Array<Signal<string>>(size.value * size.value);
   const cellsState = Array<Signal<string>>(size.value * size.value);
 
@@ -49,6 +56,13 @@ export default function BingoCard(props: BingoCardProps) {
     }
   });
 
+  for (let i = 0; i < size.value * size.value; i++) {
+    const targetState = getState(props.room, i);
+    if (cellsState[i].value !== targetState && targetState === State.Marked) {
+      cellsState[i].value = targetState;
+    }
+  }
+
   return (
     <table class="table-fixed border-separate">
       <tbody>
@@ -59,7 +73,7 @@ export default function BingoCard(props: BingoCardProps) {
                 [...Array(size.value)].map((_, j) => {
                   const pos = getPosition(size.value, i, j);
                   return (
-                    <BingoCell type={cellsType[pos]} state={cellsState[pos]} setup={false} info={cells[pos]}/>
+                    <BingoCell type={cellsType[pos]} state={cellsState[pos]} setup={false} info={cells[pos]} roomId={props.room.id} position={pos} />
                   )
                 })
               }
