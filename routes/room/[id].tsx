@@ -40,7 +40,7 @@ export default function Room(props: PageProps<RoomProps>) {
   return props.data.authorized && props.data.room ? (
     <div className="flex flex-wrap">
       <BingoCard room={props.data.room} />
-      <div className="grow"></div>
+      <div className="grow">COLOCAR MENU C BOTOES AQUI</div>
     </div>
   ) : (
     <div className="flex justify-center">

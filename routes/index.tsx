@@ -19,7 +19,7 @@ export default function RoomList(props: PageProps<Room[]>) {
         <h1>Hollow Knight Exploration Bingo</h1>
       </div>
       <div className="flex flex-row justify-center flex-wrap">
-        <Box title="ActiveRooms">
+        <Box title="Active Rooms">
           {
             props.data.map((room, i) => (
               <div className={`px-2 whitespace-nowrap ${i % 2 === 0 ? "" : "bg-neutral-800"}`}>
