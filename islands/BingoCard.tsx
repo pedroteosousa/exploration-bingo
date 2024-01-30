@@ -2,6 +2,7 @@ import { Signal, useSignal, useSignalEffect } from "@preact/signals";
 import BingoCell, { Type, State } from "./BingoCell.tsx";
 import { generateBoard } from "../utils/board.ts";
 import { Room } from "../utils/types.ts";
+import { Setup } from "./BingoCell.tsx";
 
 function getPosition(size: number, i: number, j: number) {
   return i * size + j;
@@ -20,8 +21,10 @@ function getState(room: Room, pos: number) {
   return State.Hidden;
 }
 
+
 interface BingoCardProps {
   room: Room,
+  setup: Signal<string>,
 }
 
 export default function BingoCard(props: BingoCardProps) {
@@ -63,6 +66,21 @@ export default function BingoCard(props: BingoCardProps) {
     }
   }
 
+  const updateCell = (pos: number, type: string) => {
+    if (type === Setup.Normal) {
+      if (props.room.startCells.indexOf(pos) !== -1) props.room.startCells.splice(props.room.startCells.indexOf(pos), 1);
+      if (props.room.finishCells.indexOf(pos) !== -1) props.room.finishCells.splice(props.room.finishCells.indexOf(pos), 1);
+    } else if (type === Setup.Start) {
+      props.room.startCells.push(pos);
+    } else {
+      props.room.finishCells.push(pos);
+    }
+    const body = JSON.stringify(props.room);
+      fetch(`/api/room/${props.room.id}/update`, { method: "POST", body }).then(res => {
+        console.log(res.status);
+      })
+  };
+
   return (
     <table class="table-fixed border-separate">
       <tbody>
@@ -73,7 +91,7 @@ export default function BingoCard(props: BingoCardProps) {
                 [...Array(size.value)].map((_, j) => {
                   const pos = getPosition(size.value, i, j);
                   return (
-                    <BingoCell type={cellsType[pos]} state={cellsState[pos]} setup={false} info={cells[pos]} roomId={props.room.id} position={pos} />
+                    <BingoCell type={cellsType[pos]} state={cellsState[pos]} setup={props.setup.value} info={cells[pos]} roomId={props.room.id} position={pos} updateCell = {updateCell}/>
                   )
                 })
               }

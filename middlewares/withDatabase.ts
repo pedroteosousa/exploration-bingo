@@ -10,6 +10,7 @@ export interface DatabaseClient {
   rooms(): Promise<Room[]>
   room(id: string): Promise<Room | undefined>
   createRoom(name: string, password: string, userId: string, username: string): Promise<string>
+  updateRoom(room: Room): Promise<boolean>
   joinRoom(id: string, username: string, userId: string, password: string): Promise<boolean>
   markCell(id: string, position: number, color: string): Promise<boolean>
 }
@@ -79,6 +80,11 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
       const result = await collection.updateOne({id}, {$push: {[`cells.${position}.colors`]: color}});
       return result.modifiedCount !== 0;
     },
+    updateRoom: async (room: Room) => {
+      const collection = client.collection<Room>("rooms");
+      const result = await collection.updateOne({id: room.id}, {$set: {startCells: room.startCells, finishCells: room.finishCells}});
+      return result.modifiedCount !== 0;
+    }
   }
   return ctx.next();
 }

@@ -1,9 +1,14 @@
+import { Signal, useSignal } from "@preact/signals";
 import { Handlers, PageProps, FreshContext } from "$fresh/server.ts";
 import { DatabaseClient } from "../../middlewares/withDatabase.ts";
 import { Room } from "../../utils/types.ts";
 import BingoCard from "../../islands/BingoCard.tsx";
+import SetupButton from "../../islands/SetupButton.tsx";
 import Form from "../../components/Form.tsx";
 import Box from "../../components/Box.tsx";
+import { Setup } from "../../islands/BingoCell.tsx";
+
+
 
 interface RoomProps {
   authorized: boolean;
@@ -36,11 +41,17 @@ export const handler: Handlers<RoomProps, { client: DatabaseClient, sessionId: s
   }
 };
 
+
+
 export default function Room(props: PageProps<RoomProps>) {
+  const setup = useSignal(Setup.Normal);
   return props.data.authorized && props.data.room ? (
     <div className="flex flex-wrap">
-      <BingoCard room={props.data.room} />
-      <div className="grow">COLOCAR MENU C BOTOES AQUI</div>
+      <BingoCard room={props.data.room} setup={setup}/>
+      <div className="grow">
+        <SetupButton name="Set Start" setup={setup} targetSetup={Setup.Start} /><br/>
+        <SetupButton name="Set Finish" setup={setup} targetSetup={Setup.Finish} />
+      </div>
     </div>
   ) : (
     <div className="flex justify-center">

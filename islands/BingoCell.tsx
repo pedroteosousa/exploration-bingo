@@ -14,10 +14,20 @@ export const Type = {
   End: "end",
 }
 
-function nextType(type: string) {
-  if (type == Type.Normal) return Type.Start;
-  if (type == Type.Start) return Type.End;
-  return Type.Normal;
+export const Setup = {
+  Normal: "normal",
+  Start: "start",
+  Finish: "finish",
+}
+
+function toggleStart(type: string) {
+  if (type === Type.Start) return Type.Normal;
+  return Type.Start;
+}
+
+function toggleFinish(type: string) {
+  if (type === Type.End) return Type.Normal;
+  return Type.End;
 }
 
 function getColorClass(type: string, state: string) {
@@ -37,11 +47,17 @@ function getTypeText(type: string) {
   return "";
 }
 
-function handleClick(setup: boolean, type: Signal<string>, state: Signal<string>, roomId: string, position: number) {
-  if (setup) {
-    type.value = nextType(type.value);
+function handleClick(setup: string, type: Signal<string>, state: Signal<string>, roomId: string, position: number, updateCell: (pos: number, type: string) => void) {
+  if (setup == Setup.Start) {
+    type.value = toggleStart(type.value);
+    updateCell(position, type.value);
+  } else if (setup == Setup.Finish) {
+    type.value = toggleFinish(type.value);
+    updateCell(position, type.value);
   } else {
-    if (state.value !== State.Hidden && state.value !== State.Marked) {
+    if (state.value === State.Marked) {
+      state.value 
+    } else if (state.value !== State.Hidden && state.value !== State.Marked) {
       const body = JSON.stringify({ position });
       fetch(`/api/room/${roomId}/select`, { method: "POST", body }).then(res => {
         if (res.status === 200) {
@@ -56,9 +72,10 @@ interface BingoCellProps {
   type: Signal<string>;
   state: Signal<string>;
   info: Cell;
-  setup: boolean;
+  setup: string;
   roomId: string;
   position: number;
+  updateCell: (pos: number, type: string) => void;
 }
 
 export default function BingoCell({
@@ -68,9 +85,10 @@ export default function BingoCell({
   setup,
   roomId,
   position,
+  updateCell,
 }: BingoCellProps) {
   return (
-    <td onClick={() => handleClick(setup, type, state, roomId, position)} className={`${getColorClass(type.value, state.value)} text-xs leading-3 text-center min-w-24 w-24 h-24 border border-2 border-solid overflow-hidden text-ellipsis`}>
+    <td onClick={() => handleClick(setup, type, state, roomId, position, updateCell)} className={`${getColorClass(type.value, state.value)} text-xs leading-3 text-center min-w-24 w-24 h-24 border border-2 border-solid overflow-hidden text-ellipsis`}>
       {setup ? getTypeText(type.value) : (state.value === State.Hidden ? "" : info.text)}
     </td>
   );
