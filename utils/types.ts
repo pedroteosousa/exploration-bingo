@@ -20,3 +20,16 @@ export interface Room {
   cells: Cell[];
   seed: number;
 }
+
+
+export const MessageTypes = {
+  CellMarked: "cell-marked",
+}
+
+export type CellMarkedMessage = {
+  type: string;
+  position: number;
+  color: string;
+}
+
+export type ChannelMessage = CellMarkedMessage;
