@@ -72,8 +72,10 @@ export default function BingoCard(props: BingoCardProps) {
       if (props.room.finishCells.indexOf(pos) !== -1) props.room.finishCells.splice(props.room.finishCells.indexOf(pos), 1);
     } else if (type === Setup.Start) {
       props.room.startCells.push(pos);
+      if (props.room.finishCells.indexOf(pos) !== -1) props.room.finishCells.splice(props.room.finishCells.indexOf(pos), 1);
     } else {
       props.room.finishCells.push(pos);
+      if (props.room.startCells.indexOf(pos) !== -1) props.room.startCells.splice(props.room.startCells.indexOf(pos), 1);
     }
     const body = JSON.stringify(props.room);
       fetch(`/api/room/${props.room.id}/update`, { method: "POST", body }).then(res => {

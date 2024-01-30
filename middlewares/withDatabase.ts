@@ -82,7 +82,7 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
     },
     updateRoom: async (room: Room) => {
       const collection = client.collection<Room>("rooms");
-      const result = await collection.updateOne({id: room.id}, {$set: {startCells: room.startCells, finishCells: room.finishCells}});
+      const result = await collection.updateOne({id: room.id}, {$set: {startCells: room.startCells, finishCells: room.finishCells, size: room.size, seed: room.seed}});
       return result.modifiedCount !== 0;
     }
   }

@@ -29,7 +29,7 @@ export default function RoomList(props: PageProps<Room[]>) {
           }
         </Box>
         <Box title="New Room">
-          <Form action="/api/room/create" method="get" submitText="Create Room" fields={[{
+          <Form inputType = "text" action="/api/room/create" method="get" submitText="Create Room" fields={[{
             label: "Room Name",
             name: "name",
           }, {

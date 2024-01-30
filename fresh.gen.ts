@@ -12,6 +12,7 @@ import * as $index from "./routes/index.tsx";
 import * as $room_id_ from "./routes/room/[id].tsx";
 import * as $BingoCard from "./islands/BingoCard.tsx";
 import * as $BingoCell from "./islands/BingoCell.tsx";
+import * as $NewCardButton from "./islands/NewCardButton.tsx";
 import * as $RoomButton from "./islands/RoomButton.tsx";
 import * as $SetupButton from "./islands/SetupButton.tsx";
 import { type Manifest } from "$fresh/server.ts";
@@ -30,6 +31,7 @@ const manifest = {
   islands: {
     "./islands/BingoCard.tsx": $BingoCard,
     "./islands/BingoCell.tsx": $BingoCell,
+    "./islands/NewCardButton.tsx": $NewCardButton,
     "./islands/RoomButton.tsx": $RoomButton,
     "./islands/SetupButton.tsx": $SetupButton,
   },
