@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { FreshContext } from "$fresh/server.ts";
-import { Room, User } from "../utils/types.ts";
 import { crypto } from "std/crypto/crypto.ts";
+import { Room, User, MessageTypes } from "../utils/types.ts";
 import { generateBoard } from "../utils/board.ts";
 
 export type WithDatabaseContext = FreshContext<{client: DatabaseClient}>;
@@ -22,7 +22,7 @@ export async function getDatabaseClient() {
   return client.database(Deno.env.get("MONGODB_DB_NAME") ?? "");
 }
 
-export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
+export default async function withDatabase(_: Request, ctx: WithDatabaseContext) {
   const client = await getDatabaseClient();
   ctx.state.client = {
     rooms: async () => {
@@ -77,7 +77,13 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
     markCell: async (id: string, position: number, color: string) => {
       const collection = client.collection<Room>("rooms");
       const result = await collection.updateOne({id}, {$push: {[`cells.${position}.colors`]: color}});
-      return result.modifiedCount !== 0;
+      const success = result.modifiedCount !== 0;
+      if (success) {
+        const channel = new BroadcastChannel(`room:${id}`);
+        channel.postMessage({type: MessageTypes.CellMarked, position, color});
+        channel.close();
+      }
+      return success;
     },
   }
   return ctx.next();
