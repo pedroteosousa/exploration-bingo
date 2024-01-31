@@ -17,7 +17,7 @@ export async function setSessionIdCookie(_: Request, ctx: WithSessionId) {
   return response;
 }
 
-export function withSessionId(req: Request, ctx: WithSessionId) {
+export default function withSessionId(req: Request, ctx: WithSessionId) {
   const cookies = getCookies(req.headers);
   if ("sessionId" in cookies) {
     ctx.state.sessionId = cookies.sessionId;

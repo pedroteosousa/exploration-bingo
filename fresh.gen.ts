@@ -5,6 +5,7 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
+import * as $api_room_id_connect from "./routes/api/room/[id]/connect.ts";
 import * as $api_room_id_select from "./routes/api/room/[id]/select.ts";
 import * as $api_room_id_update from "./routes/api/room/[id]/update.ts";
 import * as $api_room_create from "./routes/api/room/create.ts";
@@ -23,6 +24,7 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
+    "./routes/api/room/[id]/connect.ts": $api_room_id_connect,
     "./routes/api/room/[id]/select.ts": $api_room_id_select,
     "./routes/api/room/[id]/update.ts": $api_room_id_update,
     "./routes/api/room/create.ts": $api_room_create,

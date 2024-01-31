@@ -1,8 +1,8 @@
-import { Signal, useSignal, useSignalEffect } from "@preact/signals";
+import { Signal } from "@preact/signals";
 import BingoCell, { State, Type } from "./BingoCell.tsx";
-import { Cell, Room } from "../utils/types.ts";
 import { Setup } from "./BingoCell.tsx";
 import { useEffect } from "preact/hooks";
+import { Cell, CellMarkedMessage, MessageTypes } from "../utils/types.ts";
 
 function getPosition(size: number, i: number, j: number) {
   return i * size + j;
@@ -51,6 +51,17 @@ export default function BingoCard({
     cellsType[i] = getType(startCells.value, finishCells.value, i);
     cellsState[i] = getState(cells, startCells.value, i, setup.value);
   }
+
+  useEffect(() => {
+    const events = new EventSource(`/api/room/${id}/connect`);
+    events.onmessage = (e: MessageEvent) => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === MessageTypes.CellMarked) {
+        const data = msg as CellMarkedMessage;
+        cellsState[data.position] = State.Marked;
+      }
+    };
+  }, []);
 
   const markCell = (pos: number) => {
     if (cellsState[pos] === State.Marked) {
