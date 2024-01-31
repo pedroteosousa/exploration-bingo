@@ -44,7 +44,6 @@ export default function BingoCard({
 }: BingoCardProps) {
   const cellsType = Array<string>(size.value * size.value);
   const [cellsState, setCellsState] = useState(Array<string>(size.value * size.value));
-  const [markCell, setMarkCell] = useState<() => void>(() => {});
   const [events, setEvents] = useState<EventSource | null>(null);
 
   const revealAdjacency = (position: number) => {
@@ -65,7 +64,8 @@ export default function BingoCard({
   }
 
   for (let i = 0; i < size.value * size.value; i++) {
-    cellsState[i] = cellsState[i] ?? getState(cells.value, startCells.value, i);
+    if (setup.value === Setup.Normal)
+      cellsState[i] = cellsState[i] ?? getState(cells.value, startCells.value, i);
     cellsType[i] = getType(startCells.value, finishCells.value, i);
   }
   for (let i = 0; i < size.value * size.value; i++) {
@@ -73,9 +73,11 @@ export default function BingoCard({
   }
 
   useEffect(() => {
-    const events = new EventSource(`/api/room/${id}/connect`);
-    setEvents(events);
-  }, []);
+    if (!events || events.readyState === EventSource.CLOSED) {
+      const events = new EventSource(`/api/room/${id}/connect`);
+      setEvents(events);
+    }
+  }, [events?.readyState]);
 
   if (events) {
     events.onmessage = (e: MessageEvent) => {
@@ -103,23 +105,25 @@ export default function BingoCard({
   }
 
   const updateCell = (pos: number, type: string) => {
-    if (startCells.value.indexOf(pos) !== -1) {
-      startCells.value.splice(startCells.value.indexOf(pos), 1);
+    const newStartCells = [...startCells.value];
+    const newFinishCells = [...finishCells.value];
+    if (newStartCells.indexOf(pos) !== -1) {
+      newStartCells.splice(newStartCells.indexOf(pos), 1);
     }
-    if (finishCells.value.indexOf(pos) !== -1) {
-      finishCells.value.splice(finishCells.value.indexOf(pos), 1);
+    if (newFinishCells.indexOf(pos) !== -1) {
+      newFinishCells.splice(newFinishCells.indexOf(pos), 1);
     }
     if (type === Type.Start) {
-      startCells.value.push(pos);
+      newStartCells.push(pos);
     } else if (type === Type.Finish) {
-      finishCells.value.push(pos);
+      newFinishCells.push(pos);
     }
-    startCells.value = [...startCells.value];
-    finishCells.value = [...finishCells.value];
+    startCells.value = [...newStartCells];
+    finishCells.value = [...newFinishCells];
   };
 
   return (
-    <table class="table-fixed border-separate">
+    <table class="table-fixed border-separate border-spacing-0 mx-auto">
       <tbody>
         {[...Array(size.value)].map((_, i) => (
           <tr>

@@ -6,6 +6,8 @@ import { generateBoard } from "../utils/board.ts";
 
 export type WithDatabaseContext = FreshContext<{ client: DatabaseClient }>;
 
+// TODO: Fix race conditions
+
 export interface DatabaseClient {
   rooms(): Promise<Room[]>;
   room(id: string): Promise<Room | undefined>;

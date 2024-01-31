@@ -10,16 +10,6 @@ export const handler: Handlers<
     ctx: FreshContext<{ client: DatabaseClient; sessionId: string }>,
   ) {
     const id = ctx.params.id;
-    const room = await ctx.state.client.room(id);
-    if (!room) {
-      return new Response("Room not found", { status: 404 });
-    }
-    if (
-      !ctx.state.sessionId ||
-      !room.users.find((u) => u.id === ctx.state.sessionId)
-    ) {
-      return new Response("User can't access room", { status: 401 });
-    }
     const newFields = await req.json();
     const success = await ctx.state.client.updateRoom(id, newFields);
     if (!success) {

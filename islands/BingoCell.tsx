@@ -34,7 +34,7 @@ function getColorClass(type: string, state: string) {
   let classes = "";
   if (type == Type.Start) classes += "border-indigo-900 ";
   else if (type == Type.Finish) classes += "border-amber-500 ";
-  else classes += "border-stone-900 ";
+  else classes += "border-stone-800 ";
 
   if (state === State.Marked) classes += "bg-green-900 ";
 
@@ -94,7 +94,7 @@ export default function BingoCell({
         handleClick(setup, type, state, roomId, position, updateCell)}
       className={`${
         getColorClass(type, state)
-      } text-xs leading-3 text-center min-w-24 w-24 h-24 border border-2 border-solid overflow-hidden text-ellipsis`}
+      } text-xs leading-3 text-center min-w-24 w-24 h-24 border border-4 border-solid overflow-hidden text-ellipsis`}
     >
       {setup !== Setup.Normal
         ? getTypeText(type)

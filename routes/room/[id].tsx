@@ -87,33 +87,37 @@ export default function Room({
 
   const setup = useSignal(Setup.Normal);
   const size = useSignal(room.size);
-  const seed = useSignal(room.seed.toString());
+  const seed = useSignal("");
   const startCells = useSignal(room.startCells);
   const finishCells = useSignal(room.finishCells);
   const cells = useSignal(room.cells);
   const editing = useSignal(false);
 
   return (
-    <div className="flex flex-wrap">
-      <BingoCard
+    <div className="flex flex-row flex-wrap">
+      <div className="p-4 flex min-w-min ml-auto">
+        <div className="w-[85rem] min-w-[85rem]">
+          <BingoCard
+            id={room.id}
+            setup={setup}
+            size={size}
+            startCells={startCells}
+            finishCells={finishCells}
+            cells={cells}
+          />
+        </div>
+      </div>
+      <div className="mx-auto">
+      <CardSettings
         id={room.id}
-        setup={setup}
         size={size}
+        setup={setup}
+        seed={seed}
         startCells={startCells}
         finishCells={finishCells}
-        cells={cells}
+        editing={editing}
+        room={room}
       />
-      <div className="grow">
-        <CardSettings
-          id={room.id}
-          size={size}
-          setup={setup}
-          seed={seed}
-          startCells={startCells}
-          finishCells={finishCells}
-          editing={editing}
-          room={room}
-        />
       </div>
     </div>
   );
