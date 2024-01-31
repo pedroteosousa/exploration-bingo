@@ -7,12 +7,16 @@ import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_room_id_connect from "./routes/api/room/[id]/connect.ts";
 import * as $api_room_id_select from "./routes/api/room/[id]/select.ts";
+import * as $api_room_id_update from "./routes/api/room/[id]/update.ts";
 import * as $api_room_create from "./routes/api/room/create.ts";
 import * as $index from "./routes/index.tsx";
 import * as $room_id_ from "./routes/room/[id].tsx";
 import * as $BingoCard from "./islands/BingoCard.tsx";
 import * as $BingoCell from "./islands/BingoCell.tsx";
+import * as $CardSettings from "./islands/CardSettings.tsx";
+import * as $NewCardButton from "./islands/NewCardButton.tsx";
 import * as $RoomButton from "./islands/RoomButton.tsx";
+import * as $SetupButton from "./islands/SetupButton.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -22,6 +26,7 @@ const manifest = {
     "./routes/_middleware.ts": $_middleware,
     "./routes/api/room/[id]/connect.ts": $api_room_id_connect,
     "./routes/api/room/[id]/select.ts": $api_room_id_select,
+    "./routes/api/room/[id]/update.ts": $api_room_id_update,
     "./routes/api/room/create.ts": $api_room_create,
     "./routes/index.tsx": $index,
     "./routes/room/[id].tsx": $room_id_,
@@ -29,7 +34,10 @@ const manifest = {
   islands: {
     "./islands/BingoCard.tsx": $BingoCard,
     "./islands/BingoCell.tsx": $BingoCell,
+    "./islands/CardSettings.tsx": $CardSettings,
+    "./islands/NewCardButton.tsx": $NewCardButton,
     "./islands/RoomButton.tsx": $RoomButton,
+    "./islands/SetupButton.tsx": $SetupButton,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

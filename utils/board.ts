@@ -1,4 +1,4 @@
-import { Cell } from './types.ts';
+import { Cell } from "./types.ts";
 import { makeSeededGenerators } from "vegas";
 
 const goals = [
@@ -239,14 +239,17 @@ export function generateBoard(size: number, seed: number): Cell[] {
   while (currentIndex > 0) {
     randomIndex = rng.randomInt(0, currentIndex - 1);
     currentIndex--;
-    [goalsCopy[currentIndex], goalsCopy[randomIndex]] = [goalsCopy[randomIndex], goalsCopy[currentIndex]];
+    [goalsCopy[currentIndex], goalsCopy[randomIndex]] = [
+      goalsCopy[randomIndex],
+      goalsCopy[currentIndex],
+    ];
   }
 
   for (let i = 0; i < size * size; i++) {
     cells.push({
       colors: [],
       text: goalsCopy[i],
-    })
+    });
   }
 
   return cells;

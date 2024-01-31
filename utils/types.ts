@@ -15,15 +15,15 @@ export interface Room {
   size: number;
   startCells: number[];
   finishCells: number[];
-  password: string
+  password: string;
   users: User[];
   cells: Cell[];
   seed: number;
 }
 
-
 export const MessageTypes = {
   CellMarked: "cell-marked",
+  NewCard: "new-card",
 }
 
 export type CellMarkedMessage = {
@@ -32,4 +32,7 @@ export type CellMarkedMessage = {
   color: string;
 }
 
-export type ChannelMessage = CellMarkedMessage;
+export type NewCardMessage = {
+  type: string;
+  room: Room;
+}

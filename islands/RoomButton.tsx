@@ -3,9 +3,12 @@ interface RoomButtonProps {
   id: string;
 }
 
-export default function RoomList(props: RoomButtonProps) {
+export default function RoomButton(props: RoomButtonProps) {
   return (
-    <div className="overflow-hidden text-ellipsis" onClick={() => window.location.href = `/room/${props.id}`}>
+    <div
+      className="overflow-hidden text-ellipsis"
+      onClick={() => window.location.href = `/room/${props.id}`}
+    >
       {props.name}
     </div>
   );
