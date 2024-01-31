@@ -4,15 +4,25 @@ import { Room, User } from "../utils/types.ts";
 import { crypto } from "std/crypto/crypto.ts";
 import { generateBoard } from "../utils/board.ts";
 
-export type WithDatabaseContext = FreshContext<{client: DatabaseClient}>;
+export type WithDatabaseContext = FreshContext<{ client: DatabaseClient }>;
 
 export interface DatabaseClient {
-  rooms(): Promise<Room[]>
-  room(id: string): Promise<Room | undefined>
-  createRoom(name: string, password: string, userId: string, username: string): Promise<string>
-  updateRoom(room: Room): Promise<boolean>
-  joinRoom(id: string, username: string, userId: string, password: string): Promise<boolean>
-  markCell(id: string, position: number, color: string): Promise<boolean>
+  rooms(): Promise<Room[]>;
+  room(id: string): Promise<Room | undefined>;
+  createRoom(
+    name: string,
+    password: string,
+    userId: string,
+    username: string,
+  ): Promise<string>;
+  updateRoom(id: string, fields: Partial<Room>): Promise<boolean>;
+  joinRoom(
+    id: string,
+    username: string,
+    userId: string,
+    password: string,
+  ): Promise<boolean>;
+  markCell(id: string, position: number, color: string): Promise<boolean>;
 }
 
 export async function getDatabaseClient() {
@@ -37,12 +47,17 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
     },
     room: async (id: string) => {
       const collection = client.collection<Room>("rooms");
-      return await collection.findOne({id});
+      return await collection.findOne({ id });
     },
-    createRoom: async (name: string, password: string, userId: string, username: string) => {
+    createRoom: async (
+      name: string,
+      password: string,
+      userId: string,
+      username: string,
+    ) => {
       const collection = client.collection<Room>("rooms");
       const id = crypto.randomUUID();
-      const size = 13;
+      const size = 14;
       const seed = Math.random();
       const cells = generateBoard(size, seed);
       await collection.insertOne({
@@ -62,14 +77,21 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
       });
       return id;
     },
-    joinRoom: async (id: string, username: string, userId: string, password: string) => {
+    joinRoom: async (
+      id: string,
+      username: string,
+      userId: string,
+      password: string,
+    ) => {
       const collection = client.collection<Room>("rooms");
       const user: User = {
         name: username,
         id: userId,
         color: "green",
       };
-      const response = await collection.updateOne({id, password}, {$push: {users: user}});
+      const response = await collection.updateOne({ id, password }, {
+        $push: { users: user },
+      });
       if (response.modifiedCount === 0) {
         return false;
       }
@@ -77,14 +99,26 @@ export async function withDatabase(_: Request, ctx: WithDatabaseContext) {
     },
     markCell: async (id: string, position: number, color: string) => {
       const collection = client.collection<Room>("rooms");
-      const result = await collection.updateOne({id}, {$push: {[`cells.${position}.colors`]: color}});
+      const result = await collection.updateOne({ id }, {
+        $push: { [`cells.${position}.colors`]: color },
+      });
       return result.modifiedCount !== 0;
     },
-    updateRoom: async (room: Room) => {
+    updateRoom: async (id: string, fields: Partial<Room>) => {
       const collection = client.collection<Room>("rooms");
-      const result = await collection.updateOne({id: room.id}, {$set: {startCells: room.startCells, finishCells: room.finishCells, size: room.size, seed: room.seed}});
+      const oldRoom = await client.collection<Room>("rooms").findOne({ id });
+      if (oldRoom === undefined) {
+        return false;
+      }
+      if (fields.cells?.length === 0) {
+        fields.cells = generateBoard(
+          fields.size ?? oldRoom.size,
+          fields.seed ?? oldRoom.seed,
+        );
+      }
+      const result = await collection.updateOne({ id }, { $set: fields });
       return result.modifiedCount !== 0;
-    }
-  }
+    },
+  };
   return ctx.next();
 }

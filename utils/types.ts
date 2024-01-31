@@ -15,7 +15,7 @@ export interface Room {
   size: number;
   startCells: number[];
   finishCells: number[];
-  password: string
+  password: string;
   users: User[];
   cells: Cell[];
   seed: number;

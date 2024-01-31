@@ -2,7 +2,7 @@ import { ComponentChildren } from "preact";
 
 interface BoxProps {
   title: string;
-  children: ComponentChildren
+  children: ComponentChildren;
 }
 
 export default function Box(props: BoxProps) {

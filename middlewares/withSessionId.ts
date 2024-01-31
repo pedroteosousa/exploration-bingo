@@ -1,5 +1,5 @@
 import { FreshContext } from "$fresh/server.ts";
-import { setCookie, getCookies } from "std/http/cookie.ts";
+import { getCookies, setCookie } from "std/http/cookie.ts";
 import { crypto } from "std/crypto/crypto.ts";
 
 export type WithSessionId = FreshContext<{ sessionId: string }>;
