@@ -24,6 +24,7 @@ export interface Room {
 export const MessageTypes = {
   CellMarked: "cell-marked",
   NewCard: "new-card",
+  Room: "room",
 }
 
 export type CellMarkedMessage = {
@@ -33,6 +34,11 @@ export type CellMarkedMessage = {
 }
 
 export type NewCardMessage = {
+  type: string;
+  room: Room;
+}
+
+export type RoomMessage = {
   type: string;
   room: Room;
 }
