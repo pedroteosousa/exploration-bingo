@@ -63,7 +63,8 @@ function handleClick(
     if (state === State.Marked) {
       // TODO: Unmark cell
     } else if (state !== State.Hidden && state !== State.Marked) {
-      // TODO: Mark cell
+      const body = JSON.stringify({ position });
+      fetch(`/api/room/${roomId}/select`, { method: "POST", body })
     }
   }
 }

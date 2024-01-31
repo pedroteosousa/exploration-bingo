@@ -23,6 +23,7 @@ export interface Room {
 
 export const MessageTypes = {
   CellMarked: "cell-marked",
+  NewCard: "new-card",
 }
 
 export type CellMarkedMessage = {
@@ -31,4 +32,7 @@ export type CellMarkedMessage = {
   color: string;
 }
 
-export type ChannelMessage = CellMarkedMessage;
+export type NewCardMessage = {
+  type: string;
+  room: Room;
+}

@@ -90,6 +90,7 @@ export default function Room({
   const seed = useSignal(room.seed.toString());
   const startCells = useSignal(room.startCells);
   const finishCells = useSignal(room.finishCells);
+  const cells = useSignal(room.cells);
   const editing = useSignal(false);
 
   return (
@@ -100,7 +101,7 @@ export default function Room({
         size={size}
         startCells={startCells}
         finishCells={finishCells}
-        cells={room.cells}
+        cells={cells}
       />
       <div className="grow">
         <CardSettings

@@ -121,7 +121,17 @@ export default async function withDatabase(_: Request, ctx: WithDatabaseContext)
         );
       }
       const result = await collection.updateOne({ id }, { $set: fields });
-      return result.modifiedCount !== 0;
+      const success = result.modifiedCount !== 0;
+      if (success) {
+        const newRoom = await client.collection<Room>("rooms").findOne({ id });
+        const channel = new BroadcastChannel(`room:${id}`);
+        channel.postMessage({type: MessageTypes.NewCard, room: {
+          ...newRoom,
+          password: undefined,
+        }});
+        channel.close();
+      }
+      return success;
     },
   };
   return ctx.next();
