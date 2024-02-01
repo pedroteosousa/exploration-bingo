@@ -101,6 +101,13 @@ export default async function withDatabase(_: Request, ctx: WithDatabaseContext)
     },
     markCell: async (id: string, position: number, color: string) => {
       const collection = client.collection<Room>("rooms");
+      const room = await collection.findOne({id});
+      if (room === undefined) {
+        return false;
+      }
+      if (room.cells[position].colors.includes(color)) {
+        return true;
+      }
       const result = await collection.updateOne({id}, {$push: {[`cells.${position}.colors`]: color}});
       const success = result.modifiedCount !== 0;
       if (success) {
