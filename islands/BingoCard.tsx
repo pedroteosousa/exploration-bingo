@@ -102,6 +102,9 @@ export default function BingoCard({
         })
       }
     };
+    events.onerror = (error) => {
+      console.error(`event source error: ${error}`);
+    }
   }
 
   const updateCell = (pos: number, type: string) => {

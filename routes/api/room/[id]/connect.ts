@@ -16,6 +16,9 @@ export const handler = (
         const body = `data: ${JSON.stringify(message.data)}\n\n`;
         controller.enqueue(body);
       };
+      channel.onmessageerror = (error) => {
+        console.error(`error on message stream: ${error}`);
+      }
       const room = await ctx.state.client.room(id);
       if (!room) {
         return;
