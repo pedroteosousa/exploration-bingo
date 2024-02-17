@@ -112,7 +112,9 @@ export default async function withDatabase(_: Request, ctx: WithDatabaseContext)
       const success = result.modifiedCount !== 0;
       if (success) {
         const channel = new BroadcastChannel(`room:${id}`);
-        channel.postMessage({type: MessageTypes.CellMarked, position, color});
+        const message = {type: MessageTypes.CellMarked, position, color};
+        channel.postMessage(message);
+        console.debug(`posted message: ${JSON.stringify(message)} to room: ${id}`);
         channel.close();
       }
       return success;
