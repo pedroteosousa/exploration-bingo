@@ -77,6 +77,32 @@ export type Database = {
           },
         ]
       }
+      room_secret: {
+        Row: {
+          created_at: string
+          password: string | null
+          room_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          password?: string | null
+          room_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          password?: string | null
+          room_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_secret_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_user: {
         Row: {
           color: string | null
@@ -115,7 +141,6 @@ export type Database = {
           finish_cells: number[]
           id: string
           name: string
-          password: string | null
           seed: number
           size: number
           start_cells: number[]
@@ -125,7 +150,6 @@ export type Database = {
           finish_cells?: number[]
           id?: string
           name: string
-          password?: string | null
           seed: number
           size?: number
           start_cells?: number[]
@@ -135,7 +159,6 @@ export type Database = {
           finish_cells?: number[]
           id?: string
           name?: string
-          password?: string | null
           seed?: number
           size?: number
           start_cells?: number[]

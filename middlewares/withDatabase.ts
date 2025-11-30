@@ -1,6 +1,6 @@
-import { FreshContext, start } from "$fresh/server.ts";
+import { FreshContext } from "$fresh/server.ts";
 import { crypto } from "std/crypto/crypto.ts";
-import { Room, User } from "../utils/types.ts";
+import { Room } from "../utils/types.ts";
 import { generateBoard } from "../utils/board.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.77.0";
 import { Database } from "../utils/supabase.types.ts"
@@ -108,11 +108,15 @@ export default function withDatabase(_: Request, ctx: WithDatabaseContext) {
         id,
         name,
         seed,
-        password,
         start_cells,
         finish_cells,
       })
       if (error) throw error
+      const { error: setPasswordError } = await supabase.from("room_secret").insert({
+        room_id: id,
+        password,
+      })
+      if (setPasswordError) throw setPasswordError
       const { error: userError } = await supabase.from("room_user").insert({
         id: userId,
         username,
@@ -139,9 +143,9 @@ export default function withDatabase(_: Request, ctx: WithDatabaseContext) {
       userId: string,
       password: string,
     ) => {
-      const { data: roomData, error: roomError } = await supabase.from("rooms").select("password").eq("id", id).maybeSingle()
+      const { data: roomSecret, error: roomError } = await supabase.from("room_secret").select("password").eq("room_id", id).maybeSingle()
       if (roomError) return false
-      if (password != roomData?.password) return false
+      if (password != roomSecret?.password) return false
       const { error } = await supabase.from("room_user").insert({
         id: userId,
         username,
@@ -151,9 +155,13 @@ export default function withDatabase(_: Request, ctx: WithDatabaseContext) {
       if (error) return false
       return true;
     },
-    markCell: async (id: string, position: number, color: string) => {
+    markCell: async (id: string, position: number, _color: string) => {
       const { data: roomData, error: roomError } = await supabase.from("rooms").select("size").eq("id", id).maybeSingle()
       if (roomError) return false
+      const { data: cellData, error: fetchCellError } = await supabase.from("cells").select("marked, visible").eq("room_id", id).eq("position", position).maybeSingle()
+      if (fetchCellError) return false
+      if (cellData?.marked) return true
+      if (!cellData?.visible) return false
       const { error } = await supabase.from("cells").update({
         marked: true
       }).eq("room_id", id).eq("position", position)

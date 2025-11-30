@@ -92,10 +92,18 @@ export default function Room({
   const finishCells = useSignal(room.finishCells);
   const cells = useSignal(room.cells);
   const editing = useSignal(false);
-
   return (
-    <div className="flex flex-row flex-wrap">
-      <div className="p-4 flex min-w-min ml-auto">
+    <div
+      className="
+        flex flex-col
+        [@media(min-width:1500px)]:flex-row
+        [@media(min-width:1500px)]:items-start
+        [@media(min-width:1500px)]:justify-center
+        gap-8
+        w-full
+      "
+    >
+      <div className="w-full flex justify-center mt-8">
         <div className="w-[85rem] min-w-[85rem]">
           <BingoCard
             id={room.id}
@@ -107,17 +115,17 @@ export default function Room({
           />
         </div>
       </div>
-      <div className="mx-auto">
-      <CardSettings
-        id={room.id}
-        size={size}
-        setup={setup}
-        seed={seed}
-        startCells={startCells}
-        finishCells={finishCells}
-        editing={editing}
-        room={room}
-      />
+      <div className="w-full flex justify-center [@media(min-width:1500px)]:justify-start">
+        <CardSettings
+          id={room.id}
+          size={size}
+          setup={setup}
+          seed={seed}
+          startCells={startCells}
+          finishCells={finishCells}
+          editing={editing}
+          room={room}
+        />
       </div>
     </div>
   );

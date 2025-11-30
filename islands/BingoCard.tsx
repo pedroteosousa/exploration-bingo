@@ -2,7 +2,7 @@ import { Signal, batch } from "@preact/signals";
 import BingoCell, { State, Type } from "./BingoCell.tsx";
 import { Setup } from "./BingoCell.tsx";
 import { useEffect, useState } from "preact/hooks";
-import { Cell, CellMarkedMessage, NewCardMessage, MessageTypes } from "../utils/types.ts";
+import { Cell } from "../utils/types.ts";
 import { supabase } from "../utils/supabase.ts"
 
 function getPosition(size: number, i: number, j: number) {
@@ -17,12 +17,11 @@ function getType(startCells: number[], finishCells: number[], pos: number) {
 
 function getState(
   cells: Cell[],
-  startCells: number[],
   pos: number,
 ) {
   const cell = cells[pos];
   if (cell.colors.length !== 0) return State.Marked;
-  if (startCells.includes(pos)) return State.Revealed;
+  if (cell.text !== "") return State.Revealed;
   return State.Hidden;
 }
 
@@ -48,6 +47,20 @@ export default function BingoCard({
   const [events, setEvents] = useState<EventSource | null>(null);
 
   useEffect(() => {
+    const receivedCell = (name: string, marked: boolean, position: number) => {
+      batch(() => {
+        cells.value[position].text = name
+        cells.value[position].colors = marked ? ["green"] : []
+        if (marked) {
+          cellsState[position] = State.Marked
+          setCellsState([...cellsState])
+        } else {
+          cellsState[position] = State.Revealed
+          setCellsState([...cellsState])
+        }
+      })
+    }
+
     const subscriptionCells = supabase
       .channel(`cells:${id}`)
       .on<{marked: boolean, position: number, name: string}>(
@@ -59,15 +72,7 @@ export default function BingoCard({
           filter: `room_id=eq.${id}`,
         },
         (payload) => {
-          cells.value[payload.new.position].text = payload.new.name
-          cells.value[payload.new.position].colors = payload.new.marked ? ["green"] : []
-          if (payload.new.marked) {
-            cellsState[payload.new.position] = State.Marked
-            setCellsState([...cellsState])
-          } else {
-            cellsState[payload.new.position] = State.Revealed
-            setCellsState([...cellsState])
-          }
+          receivedCell(payload.new.name, payload.new.marked, payload.new.position)
         }
       )
       .subscribe();
@@ -82,9 +87,13 @@ export default function BingoCard({
           filter: `id=eq.${id}`,
         },
         (payload) => {
-          size.value = payload.new.size
-          startCells.value = payload.new.start_cells
-          finishCells.value = payload.new.finish_cells
+          batch(() => {
+            size.value = payload.new.size
+            startCells.value = payload.new.start_cells
+            finishCells.value = payload.new.finish_cells
+            cells.value = new Array(size.value * size.value).fill(null).map(() => ({ text: "", colors: [] }));
+            setCellsState(new Array(size.value * size.value).fill(null).map(() => (State.Hidden)))
+          })
         }
       )
       .subscribe();
@@ -94,30 +103,10 @@ export default function BingoCard({
       }
   }, [id])
 
-  const revealAdjacency = (position: number) => {
-    if (cellsState[position] === State.Marked) {
-      const dir = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-      for (let k = 0; k < dir.length; k++) {
-        const x = Math.floor(position / size.value) + dir[k][0];
-        const y = position % size.value + dir[k][1];
-        if (x >= 0 && x < size.value && y >= 0 && y < size.value) {
-          const pos2 = getPosition(size.value, x, y);
-          if (cellsState[pos2] === State.Hidden) {
-            cellsState[pos2] = State.Revealed;
-            setCellsState([...cellsState]);
-          }
-        }
-      }
-    }
-  }
-
   for (let i = 0; i < size.value * size.value; i++) {
     if (setup.value === Setup.Normal)
-      cellsState[i] = cellsState[i] ?? getState(cells.value, startCells.value, i);
+      cellsState[i] = cellsState[i] ?? getState(cells.value, i);
     cellsType[i] = getType(startCells.value, finishCells.value, i);
-  }
-  for (let i = 0; i < size.value * size.value; i++) {
-    revealAdjacency(i);
   }
 
   useEffect(() => {
@@ -126,34 +115,6 @@ export default function BingoCard({
       setEvents(events);
     }
   }, [events?.readyState]);
-
-  if (events) {
-    events.onmessage = (e: MessageEvent) => {
-      const msg = JSON.parse(e.data);
-      if (msg.type === MessageTypes.CellMarked) {
-        const data = msg as CellMarkedMessage;
-        cellsState[data.position] = State.Marked;
-        revealAdjacency(data.position);
-        setCellsState([...cellsState]);
-      } else if (msg.type === MessageTypes.NewCard) {
-        const room = (msg as NewCardMessage).room;
-        const newCellsState = Array<string>(room.size * room.size);
-        for (let i = 0; i < room.size * room.size; i++) {
-          newCellsState[i] = getState(room.cells, room.startCells, i);
-        }
-        batch(() => {
-          setCellsState(newCellsState);
-          size.value = room.size;
-          startCells.value = room.startCells;
-          finishCells.value = room.finishCells;
-          cells.value = room.cells;
-        })
-      }
-    };
-    events.onerror = (error) => {
-      console.error(`event source error: ${error}`);
-    }
-  }
 
   const updateCell = (pos: number, type: string) => {
     const newStartCells = [...startCells.value];
