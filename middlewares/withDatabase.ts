@@ -29,9 +29,7 @@ export interface DatabaseClient {
 
 export async function getDatabaseClient() {
   const client = new MongoClient();
-  await client.connect(
-    Deno.env.get("MONGODB_URI") ?? "",
-  );
+  await client.connect(Deno.env.get("MONGODB_URI") ?? "");
   return client.database(Deno.env.get("MONGODB_DB_NAME") ?? "");
 }
 
