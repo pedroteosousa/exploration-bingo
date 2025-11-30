@@ -1,7 +1,7 @@
 import { useSignal } from "@preact/signals";
 import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
 import { DatabaseClient } from "../../middlewares/withDatabase.ts";
-import { Room } from "../../utils/types.ts";
+import { RoomType } from "../../utils/types.ts";
 import BingoCard from "../../islands/BingoCard.tsx";
 import Form from "../../components/Form.tsx";
 import Box from "../../components/Box.tsx";
@@ -10,7 +10,7 @@ import CardSettings from "../../islands/CardSettings.tsx";
 
 interface RoomProps {
   authorized: boolean;
-  room?: Room;
+  room?: RoomType;
 }
 
 export const handler: Handlers<

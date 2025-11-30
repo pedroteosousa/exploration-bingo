@@ -44,8 +44,6 @@ const goals = [
     "Moorwing",
     "Widow",
 
-
-
     // Skills
     "Thread Storm",
     "Needolin",
@@ -99,16 +97,16 @@ const goals = [
     "Grant 10 wishes",
     "Grant 12 wishes",
     "Give 3 rare delicacies to the Great Gourmand"
-
-
-
 ];
 
 export function generateBoard(size: number, seed: number): Cell[] {
   const cells: Cell[] = [];
   const rng = makeSeededGenerators(seed.toString());
 
-  const goalsCopy = [...goals];
+  let goalsCopy = [...goals];
+  while (goalsCopy.length < size * size) {
+    goalsCopy = [...goalsCopy, ...goals]
+  }
 
   let currentIndex: number = goalsCopy.length, randomIndex: number;
 

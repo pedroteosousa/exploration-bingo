@@ -3,6 +3,7 @@ import BingoCell, { State, Type } from "./BingoCell.tsx";
 import { Setup } from "./BingoCell.tsx";
 import { useEffect, useState } from "preact/hooks";
 import { Cell, CellMarkedMessage, NewCardMessage, MessageTypes } from "../utils/types.ts";
+import { supabase } from "../utils/supabase.ts"
 
 function getPosition(size: number, i: number, j: number) {
   return i * size + j;
@@ -45,6 +46,53 @@ export default function BingoCard({
   const cellsType = Array<string>(size.value * size.value);
   const [cellsState, setCellsState] = useState(Array<string>(size.value * size.value));
   const [events, setEvents] = useState<EventSource | null>(null);
+
+  useEffect(() => {
+    const subscriptionCells = supabase
+      .channel(`cells:${id}`)
+      .on<{marked: boolean, position: number, name: string}>(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "cells",
+          filter: `room_id=eq.${id}`,
+        },
+        (payload) => {
+          cells.value[payload.new.position].text = payload.new.name
+          cells.value[payload.new.position].colors = payload.new.marked ? ["green"] : []
+          if (payload.new.marked) {
+            cellsState[payload.new.position] = State.Marked
+            setCellsState([...cellsState])
+          } else {
+            cellsState[payload.new.position] = State.Revealed
+            setCellsState([...cellsState])
+          }
+        }
+      )
+      .subscribe();
+    const subscriptionRoom = supabase
+      .channel(`room:${id}`)
+      .on<{size: number, start_cells: number[], finish_cells: number[]}>(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "rooms",
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          size.value = payload.new.size
+          startCells.value = payload.new.start_cells
+          finishCells.value = payload.new.finish_cells
+        }
+      )
+      .subscribe();
+      return () => {
+        subscriptionCells.unsubscribe()
+        subscriptionRoom.unsubscribe()
+      }
+  }, [id])
 
   const revealAdjacency = (position: number) => {
     if (cellsState[position] === State.Marked) {
