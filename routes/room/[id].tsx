@@ -1,7 +1,7 @@
 import { useSignal } from "@preact/signals";
 import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
 import { DatabaseClient } from "../../middlewares/withDatabase.ts";
-import { RoomType } from "../../utils/types.ts";
+import { Room as RoomType } from "../../utils/types.ts";
 import BingoCard from "../../islands/BingoCard.tsx";
 import Form from "../../components/Form.tsx";
 import Box from "../../components/Box.tsx";
