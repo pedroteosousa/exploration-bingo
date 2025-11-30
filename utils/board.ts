@@ -1,5 +1,31 @@
 import { Cell } from "./types.ts";
-import { makeSeededGenerators } from "vegas";
+import * as pr from "https://esm.sh/pure-rand@6.0.4";
+
+function hashString(str: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function makeSeededGenerators(seed: string | number) {
+  const numericSeed = typeof seed === "number"
+    ? seed
+    : hashString(seed);
+
+  let rng = pr.mersenne(numericSeed);
+
+  return {
+    randomInt: (min: number, max: number) => {
+      const dist = pr.uniformIntDistribution(min, max);
+      const [value, next] = dist(rng);
+      rng = next;
+      return value;
+    },
+  };
+}
 
 const goals = [
     // Crests
@@ -176,7 +202,10 @@ export function generateBoard(size: number, seed: number): Cell[] {
   const cells: Cell[] = [];
   const rng = makeSeededGenerators(seed.toString());
 
-  const goalsCopy = [...goals];
+  let goalsCopy = [...goals];
+  while (goalsCopy.length < size * size) {
+    goalsCopy = [...goalsCopy, ...goals]
+  }
 
   let currentIndex: number = goalsCopy.length, randomIndex: number;
 

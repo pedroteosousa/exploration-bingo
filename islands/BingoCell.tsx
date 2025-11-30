@@ -1,4 +1,3 @@
-import type { Signal } from "@preact/signals";
 import { Cell } from "../utils/types.ts";
 
 export const State = {
@@ -63,6 +62,7 @@ function handleClick(
     if (state === State.Marked) {
       // TODO: Unmark cell
     } else if (state !== State.Hidden && state !== State.Marked) {
+      console.log(state)
       const body = JSON.stringify({ position });
       fetch(`/api/room/${roomId}/select`, { method: "POST", body })
     }
