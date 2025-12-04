@@ -45,8 +45,8 @@ const goals = [
     "Defeat Sister Splinter",
     "Defeat Trobbio",
     "Defeat Phantom",
-    "Defeat Lace",
-    "Defeat Lace 2",
+    "Defeat Lace in Deep Docks",
+    "Defeat Lace in the Cradle",
     "Defeat Moorwing",
     "Defeat Great Conchflies",
     "Defeat Raging Conchfly",
@@ -57,7 +57,7 @@ const goals = [
     // Skills
     "Obtain Thread Storm",
     "Obtain Needolin",
-    "Obtain Faydown Cloak",
+    "Obtain Drifter's Cloak",
     "Obtain Clawline",
     "Obtain Sharpdart",
     "Obtain Needle Strike",
@@ -71,7 +71,6 @@ const goals = [
     "Unlock Greymoor's Bellway station",
     "Unlock The Slab's Bellway station",
     "Unlock Deep Docks' Bellway station",
-    "Unlock Putrified Ducts' Bellway station",
     "Unlock Blasted Steps' Bellway station",
     "Unlock the Grand Bellway station",
     "Unlock 1 Ventrica",
@@ -83,6 +82,8 @@ const goals = [
     "Visit Crust King Khann's Statue",
     
     // NPC
+    "Slap someone",
+    "Slap 2 different characters",
     "Meet the flea caravan at Greymoor",
     "Talk to Vaultkeeper Cardinius",
     "Talk to Mask Maker",
@@ -99,9 +100,9 @@ const goals = [
     "Interact with 5 Shakra locations",
     "Interact with 7 Shakra locations",
     "Buy out Mottled Skarr",
-    "Rescue the huge flea",
-    "Rescue all fleas in Far Fields",
-    "Rescue all fleas in The Marrow + Hunter's March",
+    "Rescue all 2 fleas in Far Fields",
+    "Rescue all 2 fleas in The Marrow + Hunter's March",
+    "Rescue all 3 fleas in Greymoor",
     "Complete Loddie's first challenge",
     "Play with Lumble the Lucky",
     "Sell 1 relic to Relic Seeker Scrounge",
@@ -118,6 +119,7 @@ const goals = [
     "Obtain 2 Craftmetal",
     "Obtain 4 Craftmetal",
     "Obtain 2 Psalm Cylinders",
+    "Obtain Twisted Bud",
     "Needle 1",
     "Needle 2",
     "Have 1 Silkeater",
@@ -128,6 +130,9 @@ const goals = [
     "Obtain a Pale Rosary Necklace",
     "Obtain Key of Apostate",
     "Obtain White Key",
+    "Obtain a Cogheart piece",
+    "Obtain the white Quill",
+    "Obtain the red Quill",
     // "Obtain ",
 
     // Tools
@@ -136,8 +141,10 @@ const goals = [
     "Obtain Scuttlebrace + Silkspeed Anklets",
     "Obtain Magnetite Dice",
     "Obtain Barbed Bracelet",
-    "Obtain Weavelight",
+    "Obtain Silkshot (any version)",
+    "Obtain Cogflies",
     "Obtain Druid's Eye",
+    "Obtain Druid's Eyes",
     "Obtain Curveclaw",
     "Obtain Conchcutter",
     "Obtain Flintslate",
@@ -159,6 +166,7 @@ const goals = [
     "Enter act 2",
     "Learn 1 part of the Threefold Melody",
     "Interact with the target from Far Field's practice room",
+    "Complete Loddie's first challenge",
     "Acquire your own Bellhome",
     "Obtain Sting Shard + Thread Storm + Clawline",
     "Ring Songclave's Bellshrine",
@@ -167,6 +175,7 @@ const goals = [
     "Ring all 6 Bellshrines",
     "Plasmify Hornet",
     "Become infested with maggots",
+    "Get free entrance to a payed room",
     // "",
 
     // Wishes
@@ -194,8 +203,20 @@ const goals = [
     "Kill a Brushflit",
     // "Kill a ",
     "Muckmaggot journal entry",
-    "Wisp journal entry"
+    "Wisp journal entry",
 
+    // Wings needed
+    "Obtain Faydown Cloak",
+    "Talk to Huntress",
+    "Unlock Putrified Ducts's Bellway Station",
+    "Rescue the huge flea",
+    "Obtain Thief's Mark",
+    "Awaken Second Sentinel",
+    "Obtain Materium",
+    "Obtain Pimpillo",
+    "Obtain Voltvessel",
+    "Obtain Snare Setter",
+    "Defeat Father of the Flame"
 ];
 
 export function generateBoard(size: number, seed: number): Cell[] {
